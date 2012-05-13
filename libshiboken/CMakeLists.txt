@@ -44,10 +44,16 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${SPARSEHASH_INCLUDE_PATH})
 add_library(libshiboken SHARED ${libshiboken_SRC})
 target_link_libraries(libshiboken ${SBK_PYTHON_LIBRARIES})
-set_target_properties(libshiboken PROPERTIES OUTPUT_NAME "shiboken${shiboken_SUFFIX}${PYTHON_SUFFIX}"
+
+if(NOT android)
+    set_target_properties(libshiboken PROPERTIES OUTPUT_NAME "shiboken${shiboken_SUFFIX}${PYTHON_SUFFIX}"
                                              VERSION ${libshiboken_VERSION}
                                              SOVERSION ${libshiboken_SOVERSION}
                                              DEFINE_SYMBOL LIBSHIBOKEN_EXPORTS)
+else()
+    set_target_properties(libshiboken PROPERTIES OUTPUT_NAME "shiboken${PYTHON_SUFFIX}"
+                                             DEFINE_SYMBOL LIBSHIBOKEN_EXPORTS)
+endif()
 
 install(FILES
         autodecref.h
