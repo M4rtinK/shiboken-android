@@ -18,21 +18,22 @@ set(shiboken_VERSION "${shiboken_MAJOR_VERSION}.${shiboken_MINOR_VERSION}.${shib
 option(BUILD_TESTS "Build tests." TRUE)
 option(USE_PYTHON3 "Use python3 libraries to build shiboken." FALSE)
 
-if (USE_PYTHON3)
-    find_package(Python3Libs)
-    find_package(Python3InterpWithDebug)
-    #use commom vars
-    set(PYTHONLIBS_FOUND ${PYTHON3LIBS_FOUND})
-    set(PYTHON_LIBRARIES ${PYTHON3_LIBRARIES})
-    set(PYTHON_INCLUDE_DIRS ${PYTHON3_INCLUDE_DIRS})
-    set(PYTHON_DEBUG_LIBRARIES ${PYTHON3_DEBUG_LIBRARIES})
-    set(PYTHONINTERP_FOUND ${PYTHON3INTERP_FOUND})
-    set(PYTHON_EXECUTABLE ${PYTHON3_EXECUTABLE})
-else()
-    find_package(PythonLibs 2.6)
-    find_package(PythonInterpWithDebug)
+if (NOT android) 
+    if (USE_PYTHON3)
+        find_package(Python3Libs)
+        find_package(Python3InterpWithDebug)
+        #use commom vars
+        set(PYTHONLIBS_FOUND ${PYTHON3LIBS_FOUND})
+        set(PYTHON_LIBRARIES ${PYTHON3_LIBRARIES})
+        set(PYTHON_INCLUDE_DIRS ${PYTHON3_INCLUDE_DIRS})
+        set(PYTHON_DEBUG_LIBRARIES ${PYTHON3_DEBUG_LIBRARIES})
+        set(PYTHONINTERP_FOUND ${PYTHON3INTERP_FOUND})
+        set(PYTHON_EXECUTABLE ${PYTHON3_EXECUTABLE})
+    else()
+        find_package(PythonLibs 2.6)
+        find_package(PythonInterpWithDebug)
+    endif()
 endif()
-
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "/Zc:wchar_t- /GR /EHsc /DWIN32 /D_WINDOWS /D_SCL_SECURE_NO_WARNINGS")
@@ -100,23 +101,24 @@ else()
 endif()
 
 add_subdirectory(libshiboken)
-add_subdirectory(doc)
+if (NOT android)
+    add_subdirectory(doc)
 
-# deps found, compile the generator.
-if (QT4_FOUND AND PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND)
-    add_subdirectory(generator)
-    add_subdirectory(shibokenmodule)
+    # deps found, compile the generator.
+    if (QT4_FOUND AND PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND)
+        add_subdirectory(generator)
+        add_subdirectory(shibokenmodule)
 
-    if (BUILD_TESTS)
-        enable_testing()
-        add_subdirectory(tests)
+        if (BUILD_TESTS)
+            enable_testing()
+            add_subdirectory(tests)
+        endif()
+    else()
+        message(WARNING "Some dependencies were not found, shiboken generator compilation disabled!")
     endif()
-else()
-    message(WARNING "Some dependencies were not found, shiboken generator compilation disabled!")
+
+    add_subdirectory(data)
 endif()
-
-add_subdirectory(data)
-
 # dist target
 set(ARCHIVE_NAME ${CMAKE_PROJECT_NAME}-${shiboken_VERSION})
 add_custom_target(dist

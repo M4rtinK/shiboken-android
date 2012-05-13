@@ -3,7 +3,11 @@ project(apiextractor)
 find_package(LibXml2 2.6.32)
 find_package(LibXslt 1.1.19)
 
-option(DISABLE_DOCSTRINGS "Disable documentation extraction." FALSE)
+if (android)
+	option(DISABLE_DOCSTRINGS "Disable documentation extraction." TRUE)
+else()
+	option(DISABLE_DOCSTRINGS "Disable documentation extraction." FALSE)
+endif()
 
 if (NOT DISABLE_DOCSTRINGS)
     if (NOT LIBXSLT_FOUND OR NOT LIBXML2_FOUND)
