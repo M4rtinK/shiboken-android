@@ -47,11 +47,11 @@ target_link_libraries(libshiboken ${SBK_PYTHON_LIBRARIES})
 
 if(NOT android)
     set_target_properties(libshiboken PROPERTIES OUTPUT_NAME "shiboken${shiboken_SUFFIX}${PYTHON_SUFFIX}"
-                                             VERSION ${libshiboken_VERSION}
-                                             SOVERSION ${libshiboken_SOVERSION}
                                              DEFINE_SYMBOL LIBSHIBOKEN_EXPORTS)
 else()
     set_target_properties(libshiboken PROPERTIES OUTPUT_NAME "shiboken${PYTHON_SUFFIX}"
+                                             VERSION ${libshiboken_VERSION}
+                                             SOVERSION ${libshiboken_SOVERSION}
                                              DEFINE_SYMBOL LIBSHIBOKEN_EXPORTS)
 endif()
 
